@@ -2,30 +2,30 @@
 const aaronWorkouts = [];
 const zoeyWorkouts = [];
 const quotes = [
-   "The only way to make sense out of change is to plunge into it, move with it, and join the dance. — Alan Watts",
-  "The only one who can limit greatness is oneself. — Barbie",
-  "Happiness is not something ready-made. It comes from actions. — Dalai Lama",
-  "The best way to predict the future is to invent it. — Alan Kay",
-  "Brains are in the head. Feet are in the shoes. One can steer oneself in any direction chosen. — Dr. Seuss",
-  "Believing in oneself is halfway to achievement. — Theodore Roosevelt",
-  "Be the change wished to be seen in the world. — Mahatma Gandhi",
-  "Everything ever wanted is on the other side of fear. — George Addair",
-  "The journey of a thousand miles begins with one step. — Lao Tzu",
-  "Act as if actions make a difference. They do. — William James",
-  "Missing 100% of the shots not taken. — Wayne Gretzky",
-  "Success is not the key to happiness. Happiness is the key to success. Loving what is done leads to success. — Albert Schweitzer",
-  "In the end, not the words of enemies will be remembered, but the silence of friends. — Martin Luther King Jr.",
-  "The only limit to realization of tomorrow is doubts of today. — Franklin D. Roosevelt",
-  "What lies behind and before are tiny matters compared to what lies within. — Ralph Waldo Emerson",
-  "Greatness does not require being great to start, but starting is required to be great. — Zig Ziglar",
-  "The future belongs to those who believe in the beauty of dreams. — Eleanor Roosevelt",
-  "Life is what happens when busy making other plans. — John Lennon",
-  "The only person destined to become is the person decided upon. — Ralph Waldo Emerson",
-  "Do not wait to strike till the iron is hot, but make it hot by striking. — William Butler Yeats",
-  "Never too old to set another goal or to dream a new dream. — C.S. Lewis",
-  "Success usually comes to those who are too busy to be looking for it. — Henry David Thoreau",
-  "Life is 10% what happens and 90% how it is reacted to. — Charles R. Swindoll",
-  "The harder the work for something, the greater the feeling when it is achieved. — Unknown",
+    "The only way to make sense out of change is to plunge into it, move with it, and join the dance. — Alan Watts",
+    "The only one who can limit greatness is oneself. — Barbie",
+    "Happiness is not something ready-made. It comes from actions. — Dalai Lama",
+    "The best way to predict the future is to invent it. — Alan Kay",
+    "Brains are in the head. Feet are in the shoes. One can steer oneself in any direction chosen. — Dr. Seuss",
+    "Believing in oneself is halfway to achievement. — Theodore Roosevelt",
+    "Be the change wished to be seen in the world. — Mahatma Gandhi",
+    "Everything ever wanted is on the other side of fear. — George Addair",
+    "The journey of a thousand miles begins with one step. — Lao Tzu",
+    "Act as if actions make a difference. They do. — William James",
+    "Missing 100% of the shots not taken. — Wayne Gretzky",
+    "Success is not the key to happiness. Happiness is the key to success. Loving what is done leads to success. — Albert Schweitzer",
+    "In the end, not the words of enemies will be remembered, but the silence of friends. — Martin Luther King Jr.",
+    "The only limit to realization of tomorrow is doubts of today. — Franklin D. Roosevelt",
+    "What lies behind and before are tiny matters compared to what lies within. — Ralph Waldo Emerson",
+    "Greatness does not require being great to start, but starting is required to be great. — Zig Ziglar",
+    "The future belongs to those who believe in the beauty of dreams. — Eleanor Roosevelt",
+    "Life is what happens when busy making other plans. — John Lennon",
+    "The only person destined to become is the person decided upon. — Ralph Waldo Emerson",
+    "Do not wait to strike till the iron is hot, but make it hot by striking. — William Butler Yeats",
+    "Never too old to set another goal or to dream a new dream. — C.S. Lewis",
+    "Success usually comes to those who are too busy to be looking for it. — Henry David Thoreau",
+    "Life is 10% what happens and 90% how it is reacted to. — Charles R. Swindoll",
+    "The harder the work for something, the greater the feeling when it is achieved. — Unknown",
 ];
 
 let timerInterval;
@@ -184,73 +184,59 @@ function saveWorkouts() {
 
 function loadWorkouts() {
     const storedAaronWorkouts = localStorage.getItem('Aaron Workouts');
-    const storedZoeyWorkouts = localStorage
-}
+    const storedZoeyWorkouts = localStorage.getItem('Zoey Workouts');
 
-if (storedAaronWorkouts) {
-    aaronWorkouts.push(...JSON.parse(storedAaronWorkouts));
-}
-if (storedZoeyWorkouts) {
-    zoeyWorkouts.push(...JSON.parse(storedZoeyWorkouts));
-}
+    if (storedAaronWorkouts) {
+        aaronWorkouts.push(...JSON.parse(storedAaronWorkouts));
+    }
+    if (storedZoeyWorkouts) {
+        zoeyWorkouts.push(...JSON.parse(storedZoeyWorkouts));
+    }
 
-// Refresh the logs after loading workouts
-viewLog(getCurrentUser());
-
+    // Refresh the logs after loading workouts
+    viewLog(getCurrentUser());
+}
 
 function editWorkout(type, index) {
-const workout = type === 'Aaron' ? aaronWorkouts[index] : zoeyWorkouts[index];
+    const workout = type === 'Aaron' ? aaronWorkouts[index] : zoeyWorkouts[index];
 
-document.getElementById('exerciseName').value = workout.exerciseName;
-document.getElementById('reps').value = workout.reps;
-document.getElementById('time').value = workout.time;
-document.getElementById('comments').value = workout.comment;
+    document.getElementById('exerciseName').value = workout.exerciseName;
+    document.getElementById('reps').value = workout.reps;
+    document.getElementById('time').value = workout.time;
+    document.getElementById('comments').value = workout.comment;
 
-// Remove the old workout entry
-if (type === 'Aaron') {
-    aaronWorkouts.splice(index, 1);
-} else if (type === 'Zoey') {
-    zoeyWorkouts.splice(index, 1);
-}
+    // Remove the old workout entry
+    if (type === 'Aaron') {
+        aaronWorkouts.splice(index, 1);
+    } else if (type === 'Zoey') {
+        zoeyWorkouts.splice(index, 1);
+    }
 
-saveWorkouts();
-viewLog(type);
+    saveWorkouts();
+    viewLog(type);
 }
 
 function deleteWorkout(type, index) {
-if (type === 'Aaron') {
-    aaronWorkouts.splice(index, 1);
-} else if (type === 'Zoey') {
-    zoeyWorkouts.splice(index, 1);
+    if (type === 'Aaron') {
+        aaronWorkouts.splice(index, 1);
+    } else if (type === 'Zoey') {
+        zoeyWorkouts.splice(index, 1);
+    }
+
+    saveWorkouts();
+    viewLog(type);
 }
 
-saveWorkouts();
-viewLog(type);
-}
 // Button color changer
 document.addEventListener('DOMContentLoaded', () => {
     const applyColorButton = document.getElementById('apply-color');
-    const buttonColorInput = document.getElementById('button-color');
+    const colorInput = document.getElementById('color-input');
 
-    if (applyColorButton) {
+    if (applyColorButton && colorInput) {
         applyColorButton.addEventListener('click', () => {
-            const color = buttonColorInput.value;
-            applyButtonColor(color);
-            localStorage.setItem(`${getCurrentUser()}-button-color`, color);
+            const color = colorInput.value;
+            document.body.style.backgroundColor = color;
         });
-
-        const savedColor = localStorage.getItem(`${getCurrentUser()}-button-color`);
-        if (savedColor) {
-            buttonColorInput.value = savedColor;
-            applyButtonColor(savedColor);
-        }
     }
 });
 
-function applyButtonColor(color) {
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(button => {
-        button.style.backgroundColor = color;
-        button.style.borderColor = color;
-    });
-}

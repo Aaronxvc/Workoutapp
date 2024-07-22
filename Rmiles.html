@@ -112,10 +112,15 @@
         </nav>
         <div class="run-section">
             <div id="map" style="width: 100%; height: 300px; margin-top: 20px; border: 1px solid #ccc;"></div>
+            <select id="runner-select" class="form-control" style="margin-top: 10px;">
+                <option value="Aaron">Aaron</option>
+                <option value="Zoey">Zoey</option>
+            </select>
             <button id="start-run" class="btn btn-primary">Start Run</button>
             <button id="stop-run" class="btn btn-secondary">Stop Run</button>
             <p id="run-data">Run Data: 0 miles</p>
         </div>
+        <div id="run-logs"></div> <!-- Added this div to display run logs -->
     </div>
 
     <!-- jQuery, Popper.js, and Bootstrap JS CDN -->
@@ -131,14 +136,27 @@
         let polyline;
         let watchId = null;
 
+        // Retrieve stored workouts from local storage
+        let storedAaronWorkouts = localStorage.getItem('storedAaronWorkouts');
+        if (!storedAaronWorkouts) {
+            storedAaronWorkouts = []; // Initialize as an empty array if no data is found
+        } else {
+            storedAaronWorkouts = JSON.parse(storedAaronWorkouts); // Parse the JSON string to an array
+        }
+
         document.getElementById('start-run').addEventListener('click', function() {
+            console.log("Start Run button clicked.");
             if (navigator.geolocation) {
+                console.log("Geolocation supported.");
                 watchId = navigator.geolocation.watchPosition(position => {
+                    console.log("Geolocation position obtained.");
                     if (!startCoords) {
                         startCoords = position.coords;
+                        console.log(`Start Coordinates: ${startCoords.latitude}, ${startCoords.longitude}`);
                         initMap(startCoords.latitude, startCoords.longitude);
                     } else {
                         const currentCoords = position.coords;
+                        console.log(`Current Coordinates: ${currentCoords.latitude}, ${currentCoords.longitude}`);
                         runDistance += calculateDistance(startCoords.latitude, startCoords.longitude, currentCoords.latitude, currentCoords.longitude);
                         startCoords = currentCoords;
                         updateMap(currentCoords.latitude, currentCoords.longitude);
@@ -152,17 +170,20 @@
         });
 
         document.getElementById('stop-run').addEventListener('click', function() {
+            console.log("Stop Run button clicked.");
             if (watchId) {
                 navigator.geolocation.clearWatch(watchId);
                 watchId = null;
                 startCoords = null;
                 alert('Run stopped!');
 
-                // Save to local storage
+                const runner = document.getElementById('runner-select').value;
+                console.log(`Runner: ${runner}, Distance: ${runDistance.toFixed(2)} miles`);
                 const runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
-                runData.push(runDistance.toFixed(2));
+                runData.push({ runner: runner, distance: runDistance.toFixed(2) });
                 localStorage.setItem('runData', JSON.stringify(runData));
                 runDistance = 0; // Reset the distance after stopping the run
+                displayRunLogs(); // Display the updated logs
             } else {
                 alert('Please start the run first.');
             }
@@ -172,15 +193,13 @@
             const R = 3958.8; // Radius of the Earth in miles
             const dLat = (lat2 - lat1) * (Math.PI / 180);
             const dLon = (lon2 - lon1) * (Math.PI / 180);
-            const a = 
-                0.5 - Math.cos(dLat)/2 + 
-                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
-                (1 - Math.cos(dLon))/2;
+            const a = 0.5 - Math.cos(dLat)/2 + Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * (1 - Math.cos(dLon))/2;
 
             return R * 2 * Math.asin(Math.sqrt(a));
         }
 
         function initMap(lat, lon) {
+            console.log(`Initializing map at ${lat}, ${lon}`);
             map = L.map('map').setView([lat, lon], 13);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -188,10 +207,11 @@
             }).addTo(map);
 
             runPath = [[lat, lon]];
-            polyline = L.polyline(runPath, {color: 'red'}).addTo(map);
+            polyline = L.polyline(runPath, {color: 'Navy Blue'}).addTo(map);
         }
 
         function updateMap(lat, lon) {
+            console.log(`Updating map with coordinates: ${lat}, ${lon}`);
             runPath.push([lat, lon]);
             polyline.setLatLngs(runPath);
             map.setView([lat, lon], 13);
@@ -213,7 +233,43 @@
                     break;
             }
         }
+
+        function displayRunLogs() {
+         const runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
+         let logs = '<h2>Run Logs</h2><ul>';
+         runData.forEach((entry, index) => {
+            logs += `
+                <li>
+                ${entry.runner}: ${entry.distance} miles
+                <button onclick="deleteRunLog(${index})" class="btn btn-danger btn-sm">Delete</button>
+                </li>;
+        `    
+    });
+    logs += '</ul>';
+    document.getElementById('run-logs').innerHTML = logs;
+}
+
+
+        // Initial display of run logs
+        window.onload = displayRunLogs;
+
+        function deleteRunLog(index) {
+         // Get current run data from localStorage
+         let runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
+    
+          // Remove the entry at the specified index
+         runData.splice(index, 1);
+    
+         // Save the updated run data back to localStorage
+         localStorage.setItem('runData', JSON.stringify(runData));
+    
+          // Update the displayed run logs
+         displayRunLogs();
+        }
+
     </script>
 </body>
 </html>
 
+
+ 
