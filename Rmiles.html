@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Run Tracker</title>
-    <link rel="Icon" href="PRF.png">
+    <link rel="icon" href="PRF.png">
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    
+    <!-- Mapbox CSS -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.css' rel='stylesheet' />
+
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
@@ -81,26 +80,32 @@
             background-color: #0056b3;
         }
 
+        #map {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+        }
+
         #run-data {
             font-size: 1.2em;
             margin-top: 10px;
         }
 
         nav a.btn {
-         margin-bottom: 20px;
-         font-size: 1.2em;
-         font-weight: bold;
-         padding: 10px 20px;
-         border-radius: 5px;
-         text-decoration: none;
-         color: #0c64c9;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #0c64c9;
         }
 
         nav a.btn:hover {
-         background-color: #0c64c9;
-         border-color: #000000;
+            background-color: #0c64c9;
+            border-color: #000000;
         }
-
     </style>
 </head>
 <body>
@@ -112,7 +117,7 @@
             <a href="Time.html" class="btn btn-outline-primary">Interval Timer and Timer</a>
         </nav>
         <div class="run-section">
-            <div id="map" style="width: 100%; height: 300px; margin-top: 20px; border: 1px solid #ccc;"></div>
+            <div id="map"></div>
             <select id="runner-select" class="form-control" style="margin-top: 10px;">
                 <option value="Aaron">Aaron</option>
                 <option value="Zoey">Zoey</option>
@@ -128,14 +133,19 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js'></script>
+
     <script>
+        const mapboxToken = 'pk.eyJ1IjoiYWFyYXJkMDk1MCIsImEiOiJjbHliczFtNzcxaTV2MnJteGlqZG1zaGphIn0.UaktWl1Rs9lZ9NWVuOgA4g'; // Replace with your Mapbox access token
         let startCoords = null;
         let runDistance = 0;
         let map;
         let runPath = [];
+        let geojson = {
+            type: 'FeatureCollection',
+            features: []
+        };
         let polyline;
-        let watchId = null;
 
         // Retrieve stored workouts from local storage
         let storedAaronWorkouts = localStorage.getItem('storedAaronWorkouts');
@@ -149,7 +159,7 @@
             console.log("Start Run button clicked.");
             if (navigator.geolocation) {
                 console.log("Geolocation supported.");
-                watchId = navigator.geolocation.watchPosition(position => {
+                navigator.geolocation.watchPosition(position => {
                     console.log("Geolocation position obtained.");
                     if (!startCoords) {
                         startCoords = position.coords;
@@ -172,12 +182,7 @@
 
         document.getElementById('stop-run').addEventListener('click', function() {
             console.log("Stop Run button clicked.");
-            if (watchId) {
-                navigator.geolocation.clearWatch(watchId);
-                watchId = null;
-                startCoords = null;
-                alert('Run stopped!');
-
+            if (map) {
                 const runner = document.getElementById('runner-select').value;
                 console.log(`Runner: ${runner}, Distance: ${runDistance.toFixed(2)} miles`);
                 const runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
@@ -201,21 +206,50 @@
 
         function initMap(lat, lon) {
             console.log(`Initializing map at ${lat}, ${lon}`);
-            map = L.map('map').setView([lat, lon], 13);
+            mapboxgl.accessToken = mapboxToken;
+            map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [lon, lat],
+                zoom: 13
+            });
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+            // Add marker
+            new mapboxgl.Marker()
+                .setLngLat([lon, lat])
+                .addTo(map);
 
-            runPath = [[lat, lon]];
-            polyline = L.polyline(runPath, {color: 'Navy Blue'}).addTo(map);
+            // Add polyline
+            polyline = map.addSource('polyline', {
+                type: 'geojson',
+                data: geojson
+            });
+            map.addLayer({
+                id: 'line',
+                type: 'line',
+                source: 'polyline',
+                layout: {},
+                paint: {
+                    'line-color': 'navy',
+                    'line-width': 5
+                }
+            });
         }
 
         function updateMap(lat, lon) {
-            console.log(`Updating map with coordinates: ${lat}, ${lon}`);
-            runPath.push([lat, lon]);
-            polyline.setLatLngs(runPath);
-            map.setView([lat, lon], 13);
+            runPath.push([lon, lat]);
+            geojson.features.push({
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: runPath
+                }
+            });
+            polyline.setData(geojson);
+            map.flyTo({
+                center: [lon, lat],
+                essential: true
+            });
         }
 
         function showError(error) {
@@ -236,41 +270,36 @@
         }
 
         function displayRunLogs() {
-         const runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
-         let logs = '<h2>Run Logs</h2><ul>';
-         runData.forEach((entry, index) => {
-            logs += `
-                <li>
-                ${entry.runner}: ${entry.distance} miles
-                <button onclick="deleteRunLog(${index})" class="btn btn-danger btn-sm">Delete</button>
-                </li>
-        `    
-    });
-    logs += '</ul>';
-    document.getElementById('run-logs').innerHTML = logs;
-}
-
+            const runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
+            let logs = '<h2>Run Logs</h2><ul>';
+            runData.forEach((entry, index) => {
+                logs += `
+                    <li>
+                        ${entry.runner}: ${entry.distance} miles
+                        <button onclick="deleteRunLog(${index})" class="btn btn-danger btn-sm">Delete</button>
+                    </li>
+                `;
+            });
+            logs += '</ul>';
+            document.getElementById('run-logs').innerHTML = logs;
+        }
 
         // Initial display of run logs
         window.onload = displayRunLogs;
 
         function deleteRunLog(index) {
-         // Get current run data from localStorage
-         let runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
-    
-          // Remove the entry at the specified index
-         runData.splice(index, 1);
-    
-         // Save the updated run data back to localStorage
-         localStorage.setItem('runData', JSON.stringify(runData));
-    
-          // Update the displayed run logs
-         displayRunLogs()
-        };
-
+            // Get current run data from localStorage
+            let runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
+        
+            // Remove the entry at the specified index
+            runData.splice(index, 1);
+        
+            // Save the updated run data back to localStorage
+            localStorage.setItem('runData', JSON.stringify(runData));
+        
+            // Update the displayed run logs
+            displayRunLogs();
+        }
     </script>
 </body>
 </html>
-
-
- 

@@ -7,106 +7,116 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="Icon" href="PRF.png">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
-        body {
-            font-family: Arial, sans-serif;
-            background-image: url('AccPhoto.jpg');
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-position: center center;
-            background-size: cover;
-            color: #333;
-            padding: 20px;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        .timer-section {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-        .timer-section label, .timer-section input {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .timer-section input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .timer-section button {
-            margin-top: 10px;
-            background-color: #0c64c9;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            padding: 10px 20px;
-            transition: background-color 0.3s;
-            font-size: 1em;
-        }
-        .timer-section button:hover {
-            background-color: #084b8a;
-        }
-        #timer-display, #regular-timer-display {
-            font-size: 2em;
-            margin-top: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .regular-timer-section {
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #e9ecef;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
-        /* Button styles to match Aaron.html */
-        nav a.btn {
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #0c64c9;
-        }
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('AccPhoto.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center center;
+    background-size: cover;
+    color: #333;
+    padding: 20px;
+    margin: 0; /* Ensure no extra margin on the body */
+}
 
-        nav a.btn:hover {
-            background-color: #0c64c9;
-            color: #fff;
-        }
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
 
-        .header-title {
-          font-family: 'Roboto', sans-serif;
-          font-size: 2.5em;
-          color: #333;
-          font-weight: bold;
-          border: 2px solid #333;
-          padding: 20px;
-          display: inline-block;
-          border-radius: 10px;
-          background-color: #fff;
-          margin-bottom: 20px;
-          text-align: center;
-          max-width: 90%;
-        }
+.header-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 2.5em;
+    color: #333;
+    font-weight: bold;
+    border: 2px solid #333;
+    padding: 20px;
+    display: inline-block;
+    border-radius: 10px;
+    background-color: #fff;
+    margin-bottom: 20px; /* Ensure no extra margin below the header */
+    text-align: center;
+    max-width: 90%;
+}
+
+nav {
+    margin: 0; /* Remove margin from the nav element */
+    padding: 0; /* Remove padding from the nav element */
+    text-align: center; /* Center align the text inside the nav */
+}
+
+nav a.btn {
+    display: inline-block; /* Ensure buttons are displayed inline */
+    margin: 0; /* Remove margin from buttons */
+    padding: 10px 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #f5f5f5; /* Ensure the text color is visible */
+    background-color: #0c64c9; /* Ensure a solid background color */
+}
+
+nav a.btn:hover {
+    background-color: #0c64c9;
+    color: #fff;
+}
+
+.btn {
+    margin-top: 10px;
+    background-color: #0c64c9;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background-color 0.3s;
+    font-size: 1em;
+}
+
+.btn:hover {
+    background-color: #084b8a;
+}
+
+.timer-section, .regular-timer-section {
+    margin-top: 0; /* Remove extra margin from timer sections */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.dropdown-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.dropdown-container select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 48%;
+}
+
+#timer-display, #regular-timer-display {
+    font-size: 2em;
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
 
     </style>
 </head>
@@ -118,21 +128,49 @@
             <a href="Zoey.html" class="btn btn-outline-primary">Go to Zoey's Log</a>
             <a href="Rmiles.html" class="btn btn-outline-primary">Track Run</a>
         </nav>
-        <!-- Interval Timer Section -->
-        <div class="timer-section">
-            <label for="workout-time">Workout Time (seconds):</label>
-            <input type="number" id="workout-time" class="form-control mb-2" name="workout-time">
-            <label for="rest-time">Rest Time (seconds):</label>
-            <input type="number" id="rest-time" class="form-control mb-2" name="rest-time">
-            <button id="start-timer" class="btn btn-primary">Start Timer</button>
-            <button id="stop-timer" class="btn btn-secondary">Stop Timer</button>
-            <p id="timer-display" class="mt-3">00:00</p>
-        </div>
-
+        <br>
+        <br>
         <!-- Regular Timer Section -->
         <div class="regular-timer-section">
-            <label for="regular-time">Set Time (seconds):</label>
-            <input type="number" id="regular-time" class="form-control mb-2" name="regular-time">
+            <label>Set Time:</label>
+            <div class="dropdown-container">
+                <select id="regular-hours" class="form-control">
+                    <option value="0">0 hours</option>
+                    <option value="1">1 hour</option>
+                    <option value="2">2 hours</option>
+                    <option value="3">3 hours</option>
+                    <option value="4">4 hours</option>
+                    <option value="5">5 hours</option>
+                </select>
+                <select id="regular-minutes" class="form-control">
+                    <option value="0">0 minutes</option>
+                    <option value="1">1 minute</option>
+                    <option value="2">2 minutes</option>
+                    <option value="3">3 minutes</option>
+                    <option value="4">4 minutes</option>
+                    <option value="5">5 minutes</option>
+                    <option value="6">6 minutes</option>
+                    <option value="7">7 minutes</option>
+                    <option value="8">8 minutes</option>
+                    <option value="9">9 minutes</option>
+                    <option value="10">10 minutes</option>
+                    <option value="20">20 minutes</option>
+                    <option value="30">30 minutes</option>
+                    <option value="40">40 minutes</option>
+                    <!-- Add more options as needed -->
+                </select>
+
+            </select>
+            <select id="regular-seconds" class="form-control">
+                <option value="0">0 seconds</option>
+                <option value="10">10 seconds</option>
+                <option value="20">20 seconds</option>
+                <option value="30">30 seconds</option>
+                <option value="40">40 seconds</option>
+                <option value="50">50 seconds</option>
+                <option value="60">60 seconds</option>
+            </select>
+            </div>
             <button id="start-regular-timer" class="btn btn-primary">Start Regular Timer</button>
             <button id="stop-regular-timer" class="btn btn-secondary">Stop Regular Timer</button>
             <button id="reset-regular-timer" class="btn btn-danger">Reset Regular Timer</button>
@@ -140,100 +178,58 @@
         </div>
     </div>
     <script>
-        // Interval Timer
-        let intervalTimerInterval;
-        let isWorkoutPhase = true;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const startTimerButton = document.getElementById('start-timer');
-            const stopTimerButton = document.getElementById('stop-timer');
-
-            startTimerButton.addEventListener('click', () => {
-                const workoutTime = parseInt(document.getElementById('workout-time').value, 10) || 0;
-                const restTime = parseInt(document.getElementById('rest-time').value, 10) || 0;
-                startIntervalTimer(workoutTime, restTime);
-            });
-
-            stopTimerButton.addEventListener('click', stopIntervalTimer);
-        });
-
-        function startIntervalTimer(workoutSeconds, restSeconds) {
-            let timeRemaining = isWorkoutPhase ? workoutSeconds : restSeconds;
-            displayIntervalTime(timeRemaining);
-
-            intervalTimerInterval = setInterval(() => {
-                timeRemaining--;
-
-                if (timeRemaining < 0) {
-                    isWorkoutPhase = !isWorkoutPhase;
-                    timeRemaining = isWorkoutPhase ? workoutSeconds : restSeconds;
-                    alert(isWorkoutPhase ? "Start your workout!" : "Time to rest!");
-                }
-
-                displayIntervalTime(timeRemaining);
-            }, 1000);
-        }
-
-        function stopIntervalTimer() {
-            clearInterval(intervalTimerInterval);
-        }
-
-        function displayIntervalTime(seconds) {
-            const timerDisplay = document.getElementById('timer-display');
-            const minutes = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
-
-        // Regular Timer
         let regularTimerInterval;
-        let regularTimerSeconds = 0;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const startRegularTimerButton = document.getElementById('start-regular-timer');
-            const stopRegularTimerButton = document.getElementById('stop-regular-timer');
-            const resetRegularTimerButton = document.getElementById('reset-regular-timer');
+document.addEventListener('DOMContentLoaded', () => {
+    const startRegularTimerButton = document.getElementById('start-regular-timer');
+    const stopRegularTimerButton = document.getElementById('stop-regular-timer');
+    const resetRegularTimerButton = document.getElementById('reset-regular-timer');
 
-            startRegularTimerButton.addEventListener('click', () => {
-                regularTimerSeconds = parseInt(document.getElementById('regular-time').value, 10) || 0;
-                startRegularTimer();
-            });
+    startRegularTimerButton.addEventListener('click', () => {
+        const regularHours = parseInt(document.getElementById('regular-hours').value, 10) || 0;
+        const regularMinutes = parseInt(document.getElementById('regular-minutes').value, 10) || 0;
+        const regularSeconds = parseInt(document.getElementById('regular-seconds').value, 10) || 0;
+        const totalSeconds = (regularHours * 3600) + (regularMinutes * 60) + regularSeconds;
+        startRegularTimer(totalSeconds);
+    });
 
-            stopRegularTimerButton.addEventListener('click', stopRegularTimer);
-            resetRegularTimerButton.addEventListener('click', resetRegularTimer);
-        });
+    stopRegularTimerButton.addEventListener('click', stopRegularTimer);
+    resetRegularTimerButton.addEventListener('click', resetRegularTimer);
+});
 
-        function startRegularTimer() {
-            displayRegularTime(regularTimerSeconds);
+function startRegularTimer(totalSeconds) {
+    let timeRemaining = totalSeconds;
+    displayRegularTime(timeRemaining);
 
-            regularTimerInterval = setInterval(() => {
-                regularTimerSeconds--;
+    regularTimerInterval = setInterval(() => {
+        timeRemaining--;
 
-                if (regularTimerSeconds < 0) {
-                    clearInterval(regularTimerInterval);
-                    alert("Regular Timer is up!");
-                }
-
-                displayRegularTime(regularTimerSeconds);
-            }, 1000);
-        }
-
-        function stopRegularTimer() {
+        if (timeRemaining < 0) {
             clearInterval(regularTimerInterval);
+            alert("Time's up!");
+            return;
         }
 
-        function resetRegularTimer() {
-            clearInterval(regularTimerInterval);
-            regularTimerSeconds = parseInt(document.getElementById('regular-time').value, 10) || 0;
-            displayRegularTime(regularTimerSeconds);
-        }
+        displayRegularTime(timeRemaining);
+    }, 1000);
+}
 
-        function displayRegularTime(seconds) {
-            const timerDisplay = document.getElementById('regular-timer-display');
-            const minutes = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
+function stopRegularTimer() {
+    clearInterval(regularTimerInterval);
+}
+
+function resetRegularTimer() {
+    clearInterval(regularTimerInterval);
+    document.getElementById('regular-timer-display').textContent = "00:00";
+}
+
+function displayRegularTime(seconds) {
+    const timerDisplay = document.getElementById('regular-timer-display');
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
     </script>
 </body>
 </html>
