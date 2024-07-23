@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interval Timer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="Icon" href="PRF.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('AccPhoto.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center center;
+            background-size: cover;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .timer-section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .timer-section label, .timer-section input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .timer-section input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .timer-section button {
+            margin-top: 10px;
+            background-color: #0c64c9;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+            font-size: 1em;
+        }
+        .timer-section button:hover {
+            background-color: #084b8a;
+        }
+        #timer-display, #regular-timer-display {
+            font-size: 2em;
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .regular-timer-section {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        /* Button styles to match Aaron.html */
+        nav a.btn {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #0c64c9;
+        }
+
+        nav a.btn:hover {
+            background-color: #0c64c9;
+            color: #fff;
+        }
+
+        .header-title {
+          font-family: 'Roboto', sans-serif;
+          font-size: 2.5em;
+          color: #333;
+          font-weight: bold;
+          border: 2px solid #333;
+          padding: 20px;
+          display: inline-block;
+          border-radius: 10px;
+          background-color: #fff;
+          margin-bottom: 20px;
+          text-align: center;
+          max-width: 90%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header-title">Interval Timer and Regular Timer</h1>
+        <nav>
+            <a href="Aaron.html" class="btn btn-outline-primary">Go to Aaron's Log</a>
+            <a href="Zoey.html" class="btn btn-outline-primary">Go to Zoey's Log</a>
+            <a href="Rmiles.html" class="btn btn-outline-primary">Track Run</a>
+        </nav>
+        <!-- Interval Timer Section -->
+        <div class="timer-section">
+            <label for="workout-time">Workout Time (seconds):</label>
+            <input type="number" id="workout-time" class="form-control mb-2" name="workout-time">
+            <label for="rest-time">Rest Time (seconds):</label>
+            <input type="number" id="rest-time" class="form-control mb-2" name="rest-time">
+            <button id="start-timer" class="btn btn-primary">Start Timer</button>
+            <button id="stop-timer" class="btn btn-secondary">Stop Timer</button>
+            <p id="timer-display" class="mt-3">00:00</p>
+        </div>
+
+        <!-- Regular Timer Section -->
+        <div class="regular-timer-section">
+            <label for="regular-time">Set Time (seconds):</label>
+            <input type="number" id="regular-time" class="form-control mb-2" name="regular-time">
+            <button id="start-regular-timer" class="btn btn-primary">Start Regular Timer</button>
+            <button id="stop-regular-timer" class="btn btn-secondary">Stop Regular Timer</button>
+            <button id="reset-regular-timer" class="btn btn-danger">Reset Regular Timer</button>
+            <p id="regular-timer-display" class="mt-3">00:00</p>
+        </div>
+    </div>
+    <script>
+        // Interval Timer
+        let intervalTimerInterval;
+        let isWorkoutPhase = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const startTimerButton = document.getElementById('start-timer');
+            const stopTimerButton = document.getElementById('stop-timer');
+
+            startTimerButton.addEventListener('click', () => {
+                const workoutTime = parseInt(document.getElementById('workout-time').value, 10) || 0;
+                const restTime = parseInt(document.getElementById('rest-time').value, 10) || 0;
+                startIntervalTimer(workoutTime, restTime);
+            });
+
+            stopTimerButton.addEventListener('click', stopIntervalTimer);
+        });
+
+        function startIntervalTimer(workoutSeconds, restSeconds) {
+            let timeRemaining = isWorkoutPhase ? workoutSeconds : restSeconds;
+            displayIntervalTime(timeRemaining);
+
+            intervalTimerInterval = setInterval(() => {
+                timeRemaining--;
+
+                if (timeRemaining < 0) {
+                    isWorkoutPhase = !isWorkoutPhase;
+                    timeRemaining = isWorkoutPhase ? workoutSeconds : restSeconds;
+                    alert(isWorkoutPhase ? "Start your workout!" : "Time to rest!");
+                }
+
+                displayIntervalTime(timeRemaining);
+            }, 1000);
+        }
+
+        function stopIntervalTimer() {
+            clearInterval(intervalTimerInterval);
+        }
+
+        function displayIntervalTime(seconds) {
+            const timerDisplay = document.getElementById('timer-display');
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // Regular Timer
+        let regularTimerInterval;
+        let regularTimerSeconds = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const startRegularTimerButton = document.getElementById('start-regular-timer');
+            const stopRegularTimerButton = document.getElementById('stop-regular-timer');
+            const resetRegularTimerButton = document.getElementById('reset-regular-timer');
+
+            startRegularTimerButton.addEventListener('click', () => {
+                regularTimerSeconds = parseInt(document.getElementById('regular-time').value, 10) || 0;
+                startRegularTimer();
+            });
+
+            stopRegularTimerButton.addEventListener('click', stopRegularTimer);
+            resetRegularTimerButton.addEventListener('click', resetRegularTimer);
+        });
+
+        function startRegularTimer() {
+            displayRegularTime(regularTimerSeconds);
+
+            regularTimerInterval = setInterval(() => {
+                regularTimerSeconds--;
+
+                if (regularTimerSeconds < 0) {
+                    clearInterval(regularTimerInterval);
+                    alert("Regular Timer is up!");
+                }
+
+                displayRegularTime(regularTimerSeconds);
+            }, 1000);
+        }
+
+        function stopRegularTimer() {
+            clearInterval(regularTimerInterval);
+        }
+
+        function resetRegularTimer() {
+            clearInterval(regularTimerInterval);
+            regularTimerSeconds = parseInt(document.getElementById('regular-time').value, 10) || 0;
+            displayRegularTime(regularTimerSeconds);
+        }
+
+        function displayRegularTime(seconds) {
+            const timerDisplay = document.getElementById('regular-timer-display');
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>

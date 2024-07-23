@@ -109,6 +109,7 @@
         <nav>
             <a href="Aaron.html" class="btn btn-outline-primary">Go to Aaron's Log</a>
             <a href="Zoey.html" class="btn btn-outline-primary">Go to Zoey's Log</a>
+            <a href="Time.html" class="btn btn-outline-primary">Interval Timer and Timer</a>
         </nav>
         <div class="run-section">
             <div id="map" style="width: 100%; height: 300px; margin-top: 20px; border: 1px solid #ccc;"></div>
@@ -242,7 +243,7 @@
                 <li>
                 ${entry.runner}: ${entry.distance} miles
                 <button onclick="deleteRunLog(${index})" class="btn btn-danger btn-sm">Delete</button>
-                </li>;
+                </li>
         `    
     });
     logs += '</ul>';
@@ -264,8 +265,8 @@
          localStorage.setItem('runData', JSON.stringify(runData));
     
           // Update the displayed run logs
-         displayRunLogs();
-        }
+         displayRunLogs()
+        };
 
     </script>
 </body>
