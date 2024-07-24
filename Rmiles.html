@@ -136,7 +136,7 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js'></script>
 
     <script>
-        const mapboxToken = 'pk.eyJ1IjoiYWFyYXJkMDk1MCIsImEiOiJjbHliczFtNzcxaTV2MnJteGlqZG1zaGphIn0.UaktWl1Rs9lZ9NWVuOgA4g'; // Replace with your Mapbox access token
+        const mapboxToken = 'pk.eyJ1IjoiYWFyYXJkMDk1MCIsImEiOiJjbHl6MXVwcDYwNjU0Mmpwc3cxMmtrOXozIn0.a8DqBYeebaYVnGAMzlI9og'; // Replace with your Mapbox access token
         let startCoords = null;
         let runDistance = 0;
         let map;
@@ -146,6 +146,7 @@
             features: []
         };
         let polyline;
+        let watchID;
 
         // Retrieve stored workouts from local storage
         let storedAaronWorkouts = localStorage.getItem('storedAaronWorkouts');
@@ -153,55 +154,6 @@
             storedAaronWorkouts = []; // Initialize as an empty array if no data is found
         } else {
             storedAaronWorkouts = JSON.parse(storedAaronWorkouts); // Parse the JSON string to an array
-        }
-
-        document.getElementById('start-run').addEventListener('click', function() {
-            console.log("Start Run button clicked.");
-            if (navigator.geolocation) {
-                console.log("Geolocation supported.");
-                navigator.geolocation.watchPosition(position => {
-                    console.log("Geolocation position obtained.");
-                    if (!startCoords) {
-                        startCoords = position.coords;
-                        console.log(`Start Coordinates: ${startCoords.latitude}, ${startCoords.longitude}`);
-                        initMap(startCoords.latitude, startCoords.longitude);
-                    } else {
-                        const currentCoords = position.coords;
-                        console.log(`Current Coordinates: ${currentCoords.latitude}, ${currentCoords.longitude}`);
-                        runDistance += calculateDistance(startCoords.latitude, startCoords.longitude, currentCoords.latitude, currentCoords.longitude);
-                        startCoords = currentCoords;
-                        updateMap(currentCoords.latitude, currentCoords.longitude);
-                        document.getElementById('run-data').innerText = `Run Data: ${runDistance.toFixed(2)} miles`;
-                    }
-                }, showError, { enableHighAccuracy: true });
-                alert('Run started!');
-            } else {
-                alert('Geolocation is not supported by this browser.');
-            }
-        });
-
-        document.getElementById('stop-run').addEventListener('click', function() {
-            console.log("Stop Run button clicked.");
-            if (map) {
-                const runner = document.getElementById('runner-select').value;
-                console.log(`Runner: ${runner}, Distance: ${runDistance.toFixed(2)} miles`);
-                const runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
-                runData.push({ runner: runner, distance: runDistance.toFixed(2) });
-                localStorage.setItem('runData', JSON.stringify(runData));
-                runDistance = 0; // Reset the distance after stopping the run
-                displayRunLogs(); // Display the updated logs
-            } else {
-                alert('Please start the run first.');
-            }
-        });
-
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 3958.8; // Radius of the Earth in miles
-            const dLat = (lat2 - lat1) * (Math.PI / 180);
-            const dLon = (lon2 - lon1) * (Math.PI / 180);
-            const a = 0.5 - Math.cos(dLat)/2 + Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * (1 - Math.cos(dLon))/2;
-
-            return R * 2 * Math.asin(Math.sqrt(a));
         }
 
         function initMap(lat, lon) {
@@ -214,38 +166,42 @@
                 zoom: 13
             });
 
-            // Add marker
-            new mapboxgl.Marker()
-                .setLngLat([lon, lat])
-                .addTo(map);
+            map.on('load', () => {
+                console.log('Map loaded successfully');
+                // Add marker
+                new mapboxgl.Marker()
+                    .setLngLat([lon, lat])
+                    .addTo(map);
 
-            // Add polyline
-            polyline = map.addSource('polyline', {
-                type: 'geojson',
-                data: geojson
-            });
-            map.addLayer({
-                id: 'line',
-                type: 'line',
-                source: 'polyline',
-                layout: {},
-                paint: {
-                    'line-color': 'navy',
-                    'line-width': 5
-                }
+                // Add polyline
+                map.addSource('polyline', {
+                    type: 'geojson',
+                    data: geojson
+                });
+
+                map.addLayer({
+                    id: 'line',
+                    type: 'line',
+                    source: 'polyline',
+                    layout: {},
+                    paint: {
+                        'line-color': 'navy',
+                        'line-width': 5
+                    }
+                });
             });
         }
 
         function updateMap(lat, lon) {
             runPath.push([lon, lat]);
-            geojson.features.push({
+            geojson.features = [{
                 type: 'Feature',
                 geometry: {
                     type: 'LineString',
                     coordinates: runPath
                 }
-            });
-            polyline.setData(geojson);
+            }];
+            map.getSource('polyline').setData(geojson);
             map.flyTo({
                 center: [lon, lat],
                 essential: true
@@ -300,6 +256,76 @@
             // Update the displayed run logs
             displayRunLogs();
         }
+
+        document.getElementById('start-run').addEventListener('click', function() {
+            console.log('Run started');
+            runDistance = 0;
+            runPath = [];
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    startCoords = {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    };
+                    initMap(startCoords.lat, startCoords.lon);
+                }, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,  // Increased timeout duration to 10 seconds
+                    maximumAge: 0
+                });
+
+                watchID = navigator.geolocation.watchPosition((position) => {
+                    const newCoords = {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    };
+
+                    if (startCoords) {
+                        const distance = calculateDistance(startCoords.lat, startCoords.lon, newCoords.lat, newCoords.lon);
+                        runDistance += distance;
+                        document.getElementById('run-data').textContent = `Run Data: ${runDistance.toFixed(2)} miles`;
+                        startCoords = newCoords;
+                        updateMap(newCoords.lat, newCoords.lon);
+                    }
+                }, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,  // Increased timeout duration to 10 seconds
+                    maximumAge: 0
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+
+        document.getElementById('stop-run').addEventListener('click', function() {
+            console.log('Run stopped');
+            navigator.geolocation.clearWatch(watchID);
+
+            const runner = document.getElementById('runner-select').value;
+            const runData = localStorage.getItem('runData') ? JSON.parse(localStorage.getItem('runData')) : [];
+            runData.push({
+                runner: runner,
+                distance: runDistance.toFixed(2)
+            });
+
+            localStorage.setItem('runData', JSON.stringify(runData));
+            displayRunLogs();
+        });
+
+        // Haversine formula to calculate distance between two coordinates
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+            return distance * 0.621371; // Convert to miles
+        }
     </script>
 </body>
 </html>
+
